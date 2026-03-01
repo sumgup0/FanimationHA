@@ -4,23 +4,22 @@ from __future__ import annotations
 from typing import Any
 
 from homeassistant.components.number import NumberEntity, NumberMode
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, TIMER_MAX, TIMER_MIN
-from .coordinator import FanimationCoordinator
+from . import FanimationConfigEntry
+from .const import TIMER_MAX, TIMER_MIN
 from .entity import FanimationEntity
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: FanimationConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the timer entity."""
-    coordinator: FanimationCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     async_add_entities([FanimationTimer(coordinator, entry.entry_id)])
 
 

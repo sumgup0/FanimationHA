@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.percentage import (
@@ -14,11 +13,11 @@ from homeassistant.util.percentage import (
     percentage_to_ordered_list_item,
 )
 
+from . import FanimationConfigEntry
 from .const import (
     DIRECTION_CHANGE_WAIT,
     DIR_FORWARD,
     DIR_REVERSE,
-    DOMAIN,
     LOGGER,
     SPEED_COUNT,
     SPEED_HIGH,
@@ -34,11 +33,11 @@ ORDERED_NAMED_FAN_SPEEDS = [SPEED_LOW, SPEED_MED, SPEED_HIGH]
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: FanimationConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the fan entity."""
-    coordinator: FanimationCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     async_add_entities([FanimationFan(coordinator, entry.entry_id)])
 
 

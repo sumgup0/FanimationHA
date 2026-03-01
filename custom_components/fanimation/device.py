@@ -123,7 +123,11 @@ class FanimationDevice:
             disconnected_callback=self._on_disconnect,
             max_attempts=3,
         )
-        await self._client.start_notify(CHAR_NOTIFY, self._notification_handler)
+        await self._client.start_notify(
+            CHAR_NOTIFY,
+            self._notification_handler,
+            bluez={"use_start_notify": True},
+        )
         LOGGER.debug("Connected to %s (%s)", self._name, self._mac)
 
     def _on_disconnect(self, _client: BleakClient) -> None:

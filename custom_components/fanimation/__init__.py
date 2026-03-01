@@ -5,12 +5,14 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_MAC, CONF_NAME
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, LOGGER, PLATFORMS
+from .const import LOGGER, PLATFORMS
 from .coordinator import FanimationCoordinator
 from .device import FanimationDevice
 
+type FanimationConfigEntry = ConfigEntry[FanimationCoordinator]
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+
+async def async_setup_entry(hass: HomeAssistant, entry: FanimationConfigEntry) -> bool:
     """Set up Fanimation BLE from a config entry."""
     mac = entry.data[CONF_MAC]
     name = entry.data[CONF_NAME]
@@ -19,16 +21,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Create device and coordinator
     device = FanimationDevice(hass, mac, name)
-    coordinator = FanimationCoordinator(hass, device)
+    coordinator = FanimationCoordinator(hass, device, entry)
 
     # First refresh — if it fails, raise ConfigEntryNotReady so HA
     # retries with exponential backoff instead of leaving entities
     # permanently unavailable.
     await coordinator.async_config_entry_first_refresh()
 
-    # Store coordinator for platform setup
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    # Store coordinator on the config entry for platform access
+    entry.runtime_data = coordinator
 
     # Forward setup to entity platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -36,7 +37,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(
+    hass: HomeAssistant, entry: FanimationConfigEntry
+) -> bool:
     """Unload a config entry.
 
     Must clean up all resources: cancel pending tasks, disconnect BLE.
@@ -44,12 +47,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
-        coordinator: FanimationCoordinator = hass.data[DOMAIN].pop(entry.entry_id)
+        coordinator = entry.runtime_data
 
         # Cancel any pending direction-change tasks on the fan entity.
-        # The fan entity stores the task reference, but the coordinator
-        # also needs a shutdown hook so __init__.py can trigger cleanup
-        # without reaching into entity internals.
         coordinator.async_shutdown()
 
         await coordinator.device.disconnect()

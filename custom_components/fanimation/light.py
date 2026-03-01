@@ -8,22 +8,21 @@ from homeassistant.components.light import (
     ColorMode,
     LightEntity,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, DOWNLIGHT_MAX
-from .coordinator import FanimationCoordinator
+from . import FanimationConfigEntry
+from .const import DOWNLIGHT_MAX
 from .entity import FanimationEntity
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: FanimationConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the light entity."""
-    coordinator: FanimationCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     async_add_entities([FanimationLight(coordinator, entry.entry_id)])
 
 

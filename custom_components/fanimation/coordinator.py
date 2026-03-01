@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import timedelta
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -21,13 +22,16 @@ from .device import FanimationDevice, FanimationState
 class FanimationCoordinator(DataUpdateCoordinator[FanimationState]):
     """Coordinator that polls the fan via BLE and manages fast/slow poll cycles."""
 
-    def __init__(self, hass: HomeAssistant, device: FanimationDevice) -> None:
+    def __init__(
+        self, hass: HomeAssistant, device: FanimationDevice, entry: ConfigEntry
+    ) -> None:
         """Initialize the coordinator."""
         super().__init__(
             hass,
             LOGGER,
             name=f"{DOMAIN}_{device.mac}",
             update_interval=timedelta(seconds=POLL_SLOW),
+            config_entry=entry,
         )
         self.device = device
         self._fast_poll_remaining = 0
