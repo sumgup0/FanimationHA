@@ -38,10 +38,6 @@ SPEED_MED = 2
 SPEED_HIGH = 3
 SPEED_COUNT = 3
 
-# Direction
-DIR_FORWARD = 0
-DIR_REVERSE = 1
-
 # Downlight
 DOWNLIGHT_MIN = 0
 DOWNLIGHT_MAX = 100
@@ -57,4 +53,3 @@ POLL_FAST_CYCLES = 3
 
 # Connection
 MAX_CONNECTION_FAILURES = 3
-DIRECTION_CHANGE_WAIT = 60  # seconds to wait for motor to stop

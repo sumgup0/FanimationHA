@@ -9,9 +9,11 @@ The BTCR9 BLE protocol has been fully reverse-engineered and verified against re
 | Feature | Range | Status |
 |---------|-------|--------|
 | Fan speed | Off / Low / Medium / High | Verified |
-| Fan direction | Forward / Reverse | Verified |
+| Fan direction | Forward / Reverse | Not supported on AC motors |
 | Downlight brightness | 0-100% | Verified |
 | Sleep timer | 0-360 minutes | Verified |
+
+> **Note on direction:** The BLE protocol includes a direction byte, but AC motor fans (like those using the BTCR9 + BTT9 remote) do not support electronic direction change. The byte is accepted but has no physical effect. AC fan direction is controlled by a physical switch on the motor housing. DC motor Fanimation fans may support this feature.
 
 ## Installation (Home Assistant)
 
@@ -36,7 +38,7 @@ Three entities per fan, grouped under one device:
 
 | Entity | Type | Controls |
 |--------|------|----------|
-| Fan | `fan` | Speed (off/low/med/high), direction (forward/reverse) |
+| Fan | `fan` | Speed (off/low/med/high) |
 | Downlight | `light` | On/off, brightness (0-100%) |
 | Sleep Timer | `number` | 0-360 minutes (turns off fan + light on expiry) |
 

@@ -225,13 +225,11 @@ The BTCR9 uses an AC motor with a capacitor-switched speed control, which physic
 | 0 | Forward | Standard airflow direction (default) |
 | 1 | Reverse | Reversed airflow |
 
-Both directions are confirmed working via BLE, even though the BTT9 physical remote does not have a direction button.
+**⚠️ NOT SUPPORTED on AC motor models.** Testing on BTCR9 hardware with an AC motor confirmed that the direction byte is accepted in SET_STATE but has no physical effect — the fan continues spinning in the same direction. The verification GET_STATUS always returns direction=0 (forward) regardless of the value sent. The BTT9 physical remote also has no reverse button.
 
-**Physical constraint**: The fan motor must come to a complete stop before it can reverse direction. If you send a direction change while the fan is spinning, the motor will attempt to reverse immediately, which may cause strain. Best practice:
+The direction byte likely only works on Fanimation DC motor models that support electronic reverse. AC motors require a physical DPDT switch on the motor housing to change direction.
 
-1. Set speed to 0 (off)
-2. Wait for the fan to stop spinning (30-60 seconds depending on speed)
-3. Send the new direction with the desired speed
+The Home Assistant integration does not expose direction control. The direction byte is always preserved from the current GET_STATUS response during read-before-write operations.
 
 ---
 
@@ -320,9 +318,9 @@ When you send a SET_STATE command, the fan immediately responds with a STATUS_RE
 
 The BTCR9 only accepts one BLE connection at a time. If the FanSync app is connected, your script cannot connect, and vice versa. Make sure to disconnect one before connecting the other.
 
-### Direction Change Needs Motor Stop
+### Direction Change Does Not Work on AC Motors
 
-Sending a direction change while the fan is spinning will cause the motor to try to reverse instantly. This stresses the motor and may not work correctly. Stop the fan first, wait for it to spin down, then change direction.
+The direction byte (byte[3]) is accepted in SET_STATE but has no physical effect on AC motor models. The BLE chip echoes the value in the SET_STATE response, but the verification GET_STATUS always returns 0 (forward). This feature likely only works on Fanimation DC motor fans. See [Section 8: Direction](#8-direction) for details.
 
 ### Speed Values 4-6 Are Ghosts
 

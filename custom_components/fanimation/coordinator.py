@@ -1,7 +1,6 @@
 """DataUpdateCoordinator for Fanimation BLE fans."""
 from __future__ import annotations
 
-from collections.abc import Callable
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
@@ -36,20 +35,6 @@ class FanimationCoordinator(DataUpdateCoordinator[FanimationState]):
         self.device = device
         self._fast_poll_remaining = 0
         self._connection_failures = 0
-        self._shutdown_callbacks: list[Callable[[], None]] = []
-
-    def register_shutdown_callback(self, callback: Callable[[], None]) -> None:
-        """Register a callback to be called during shutdown/unload.
-
-        Used by entities to register cleanup (e.g., cancel direction-change tasks).
-        """
-        self._shutdown_callbacks.append(callback)
-
-    def async_shutdown(self) -> None:
-        """Cancel all pending tasks registered by entities."""
-        for callback in self._shutdown_callbacks:
-            callback()
-        self._shutdown_callbacks.clear()
 
     async def _async_update_data(self) -> FanimationState:
         """Poll the fan for current state."""
