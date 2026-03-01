@@ -1,6 +1,6 @@
 # FanimationHA
 
-Reverse-engineered BLE protocol and diagnostic tools for Fanimation ceiling fans using the **BTCR9 FanSync Bluetooth** receiver. The goal is to build a [Home Assistant](https://www.home-assistant.io/) HACS integration for local Bluetooth control — no cloud, no app dependency.
+[Home Assistant](https://www.home-assistant.io/) HACS custom component for **local Bluetooth control** of Fanimation ceiling fans using the BTCR9 FanSync Bluetooth receiver. No cloud, no app dependency. Includes the fully reverse-engineered BLE protocol and diagnostic tools.
 
 ## What Works
 
@@ -12,6 +12,35 @@ The BTCR9 BLE protocol has been fully reverse-engineered and verified against re
 | Fan direction | Forward / Reverse | Verified |
 | Downlight brightness | 0-100% | Verified |
 | Sleep timer | 0-360 minutes | Verified |
+
+## Installation (Home Assistant)
+
+### HACS (Recommended)
+
+1. Open HACS in your Home Assistant instance
+2. Click the three dots menu → **Custom repositories**
+3. Add `https://github.com/sumgup0/FanimationHA` as an **Integration**
+4. Search for "Fanimation" in HACS and install it
+5. Restart Home Assistant
+6. The fan should be auto-discovered via Bluetooth. If not, go to **Settings → Devices & Services → Add Integration → Fanimation BLE Ceiling Fan** and enter the MAC address manually.
+
+### Manual
+
+1. Copy the `custom_components/fanimation/` folder into your Home Assistant `config/custom_components/` directory
+2. Restart Home Assistant
+3. Add the integration via **Settings → Devices & Services**
+
+### What You Get
+
+Three entities per fan, grouped under one device:
+
+| Entity | Type | Controls |
+|--------|------|----------|
+| Fan | `fan` | Speed (off/low/med/high), direction (forward/reverse) |
+| Downlight | `light` | On/off, brightness (0-100%) |
+| Sleep Timer | `number` | 0-360 minutes (turns off fan + light on expiry) |
+
+Works with ESP32 Bluetooth proxies — no special configuration needed.
 
 ## Protocol Reference
 
