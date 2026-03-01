@@ -1,0 +1,29 @@
+{
+  "config": {
+    "step": {
+      "bluetooth_confirm": {
+        "title": "Fanimation Ceiling Fan Detected",
+        "description": "Found: {name} ({mac})\n\nThis fan can also be controlled by its RF remote. All commands from Home Assistant will read the current fan state first, so remote changes are never overwritten.",
+        "data": {
+          "name": "Friendly name"
+        }
+      },
+      "user": {
+        "title": "Add Fanimation Ceiling Fan",
+        "description": "Enter the MAC address of your fan. You can find it using a BLE scanner app — look for a device named CeilingFan.",
+        "data": {
+          "mac": "MAC address",
+          "name": "Friendly name"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the fan. Make sure it is powered on and within Bluetooth range.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This fan is already configured.",
+      "not_fanimation": "This device does not appear to be a Fanimation fan (expected GATT characteristics not found)."
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "domain": "fanimation",
+  "name": "Fanimation BLE Ceiling Fan",
+  "bluetooth": [{"local_name": "CeilingFan"}],
+  "codeowners": ["@sumgup0"],
+  "config_flow": true,
+  "dependencies": ["bluetooth"],
+  "documentation": "https://github.com/sumgup0/FanimationHA",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/sumgup0/FanimationHA/issues",
+  "loggers": ["custom_components.fanimation"],
+  "requirements": ["bleak-retry-connector>=3.7.0"],
+  "version": "0.1.0"
+}
