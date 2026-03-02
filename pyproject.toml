@@ -1,0 +1,29 @@
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "B",      # flake8-bugbear
+    "D",      # pydocstyle
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "I",      # isort
+    "RUF",    # ruff-specific rules
+    "S",      # flake8-bandit (security)
+    "UP",     # pyupgrade
+    "W",      # pycodestyle warnings
+]
+ignore = [
+    "D203",   # conflicts with D211 — HA uses no-blank-line-before-class
+    "D213",   # conflicts with D212 — HA uses summary-on-first-line
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "D",      # no docstrings required in tests
+    "S101",   # assert is fine in tests
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

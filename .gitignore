@@ -1,9 +1,32 @@
+# Python
 *.class
-logs/
-venv/
+*.pyc
 __pycache__/
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+logs/
 
 # Local-only docs (chat logs, raw test output, plans)
 docs/plans/
 docs/2025.*
 docs/2026.*
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
