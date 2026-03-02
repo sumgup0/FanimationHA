@@ -35,8 +35,14 @@ from .conftest import TEST_MAC, TEST_NAME  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
-def auto_enable_custom_integrations(enable_custom_integrations):
-    """Enable custom integrations for all tests in this module."""
+def auto_enable_custom_integrations(enable_custom_integrations, mock_bluetooth):
+    """Enable custom integrations and mock BLE for all tests.
+
+    ``enable_custom_integrations`` lets the HA test harness discover our
+    custom component.  ``mock_bluetooth`` patches the bluetooth and
+    bluetooth_adapters integrations so their dependency setup succeeds
+    without real BLE hardware.
+    """
     yield
 
 
