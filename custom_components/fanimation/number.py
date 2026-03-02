@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.const import UnitOfTime
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import FanimationConfigEntry
@@ -58,11 +59,23 @@ class FanimationTimer(FanimationEntity, NumberEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return extra state attributes."""
         return {
-            "timer_note": "Fan must be running to set the timer. When it expires, both fan and light turn off. Set to 0 to cancel.",
+            "timer_note": (
+                "Fan must be running to set the timer."
+                " When it expires, both fan and light turn off. Set to 0 to cancel."
+            ),
             "rf_remote_sync": "State is verified before every command — RF remote changes are always respected",
         }
 
     async def async_set_native_value(self, value: float) -> None:
-        """Set the sleep timer."""
+        """Set the sleep timer.
+
+        The BTCR9 controller silently ignores the timer when the fan motor
+        is off (speed=0), regardless of whether the light is on.
+        """
+        if int(value) > 0 and self.coordinator.data and self.coordinator.data.speed == 0:
+            raise HomeAssistantError(
+                "The sleep timer only works when the fan is running. "
+                "Turn the fan on first, then set the timer."
+            )
         await self.coordinator.device.async_set_state(timer_minutes=int(value))
         await self.coordinator.async_start_fast_poll()
