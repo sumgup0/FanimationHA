@@ -19,16 +19,21 @@ from unittest.mock import MagicMock
 # ---------------------------------------------------------------------------
 # Stub heavy HA / BLE modules that are Linux-only or pull massive dep trees.
 # This MUST run before any import of custom_components.fanimation.
+#
+# IMPORTANT: Only apply on Windows!  On Linux CI the real HA packages are
+# installed via pytest-homeassistant-custom-component and the config-flow
+# tests need the genuine BluetoothServiceInfoBleak (not a MagicMock).
 # ---------------------------------------------------------------------------
 
-_STUB_MODULES = [
-    "homeassistant.components.bluetooth",
-    "homeassistant.components.usb",
-    "bleak_retry_connector",
-]
+if sys.platform == "win32":
+    _STUB_MODULES = [
+        "homeassistant.components.bluetooth",
+        "homeassistant.components.usb",
+        "bleak_retry_connector",
+    ]
 
-for _mod in _STUB_MODULES:
-    sys.modules.setdefault(_mod, MagicMock())
+    for _mod in _STUB_MODULES:
+        sys.modules.setdefault(_mod, MagicMock())
 
 # homeassistant.const has pure constants — ensure a real copy is used if
 # it already loaded, but it usually resolves fine.
@@ -38,13 +43,13 @@ for _mod in _STUB_MODULES:
 # Now safe to import our integration modules
 # ---------------------------------------------------------------------------
 
-import pytest  # noqa: E402
+import pytest
 
-from custom_components.fanimation.const import (  # noqa: E402
+from custom_components.fanimation.const import (
     CMD_STATUS_RESPONSE,
     START_BYTE,
 )
-from custom_components.fanimation.device import FanimationState  # noqa: E402
+from custom_components.fanimation.device import FanimationState
 
 TEST_MAC = "50:8C:B1:4A:16:A0"
 TEST_NAME = "Test Fan"
