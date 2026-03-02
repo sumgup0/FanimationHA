@@ -58,7 +58,7 @@ class FanimationTimer(FanimationEntity, NumberEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return extra state attributes."""
         return {
-            "timer_note": "Timer turns off BOTH fan and light when it expires. Set to 0 to cancel.",
+            "timer_note": "Fan must be running to set the timer. When it expires, both fan and light turn off. Set to 0 to cancel.",
             "rf_remote_sync": "State is verified before every command — RF remote changes are always respected",
         }
 
