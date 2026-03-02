@@ -17,22 +17,24 @@ import sys
 from unittest.mock import MagicMock
 
 # ---------------------------------------------------------------------------
-# Stub heavy HA / BLE modules that are Linux-only or pull massive dep trees.
-# This MUST run before any import of custom_components.fanimation.
+# Stub heavy HA / BLE modules so our integration code can be imported
+# without pulling in the full BLE or USB hardware stacks.
 #
-# IMPORTANT: Only apply on Windows!  On Linux CI the real HA packages are
-# installed via pytest-homeassistant-custom-component and the config-flow
-# tests need the genuine BluetoothServiceInfoBleak (not a MagicMock).
+# homeassistant.components.usb needs ``aiousbwatcher`` (not installed in any
+# test env), so it is stubbed on ALL platforms.
+#
+# On Windows ONLY we also stub bluetooth and bleak_retry_connector because
+# those packages have Linux-specific extensions.  On Linux CI the real
+# packages are available (installed by pytest-homeassistant-custom-component)
+# and the config-flow tests need the genuine BluetoothServiceInfoBleak.
 # ---------------------------------------------------------------------------
 
-if sys.platform == "win32":
-    _STUB_MODULES = [
-        "homeassistant.components.bluetooth",
-        "homeassistant.components.usb",
-        "bleak_retry_connector",
-    ]
+# Always stub USB — aiousbwatcher is not in test requirements on any OS.
+sys.modules.setdefault("homeassistant.components.usb", MagicMock())
 
-    for _mod in _STUB_MODULES:
+if sys.platform == "win32":
+    # Windows: also stub BLE modules (no bleak / habluetooth support)
+    for _mod in ("homeassistant.components.bluetooth", "bleak_retry_connector"):
         sys.modules.setdefault(_mod, MagicMock())
 
 # homeassistant.const has pure constants — ensure a real copy is used if
