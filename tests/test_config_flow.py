@@ -35,14 +35,23 @@ from .conftest import TEST_MAC, TEST_NAME  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
-def auto_enable_custom_integrations(enable_custom_integrations, mock_bluetooth):
-    """Enable custom integrations and mock BLE for all tests.
+def auto_enable_custom_integrations(enable_custom_integrations):
+    """Let the HA test harness discover our custom component."""
+    yield
 
-    ``enable_custom_integrations`` lets the HA test harness discover our
-    custom component.  ``mock_bluetooth`` patches the bluetooth and
-    bluetooth_adapters integrations so their dependency setup succeeds
-    without real BLE hardware.
+
+@pytest.fixture(autouse=True)
+async def mock_bluetooth_deps(hass: HomeAssistant):
+    """Mark bluetooth dependencies as already set up.
+
+    Our manifest declares ``dependencies: ["bluetooth", "bluetooth_adapters"]``.
+    Without this, HA tries to fully initialise those integrations during
+    ``flow.async_init``, which fails in CI (no BLE adapter hardware).
+    Adding them to ``hass.config.components`` tells the dependency checker
+    they are already loaded — so it skips their setup entirely.
     """
+    hass.config.components.add("bluetooth")
+    hass.config.components.add("bluetooth_adapters")
     yield
 
 
