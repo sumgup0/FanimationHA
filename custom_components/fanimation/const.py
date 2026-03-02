@@ -1,4 +1,5 @@
 """Constants for the Fanimation BLE integration."""
+
 from __future__ import annotations
 
 import logging
@@ -9,10 +10,6 @@ DOMAIN = "fanimation"
 LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.FAN, Platform.LIGHT, Platform.NUMBER]
-
-# Config entry keys
-CONF_MAC = "mac"
-CONF_NAME = "name"
 
 # BLE Protocol — Fan Controller Service (0xE000)
 CHAR_WRITE = "0000e001-0000-1000-8000-00805f9b34fb"

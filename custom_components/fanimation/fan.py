@@ -1,4 +1,5 @@
 """Fan entity for Fanimation BLE integration."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -39,12 +40,8 @@ class FanimationFan(FanimationEntity, FanEntity):
     """Fanimation ceiling fan entity."""
 
     _attr_speed_count = SPEED_COUNT
-    _attr_supported_features = (
-        FanEntityFeature.SET_SPEED
-        | FanEntityFeature.TURN_ON
-        | FanEntityFeature.TURN_OFF
-    )
-    _attr_translation_key = "fan"
+    _attr_supported_features = FanEntityFeature.SET_SPEED | FanEntityFeature.TURN_ON | FanEntityFeature.TURN_OFF
+    _attr_name = None  # Primary entity — uses device name only
 
     def __init__(
         self,

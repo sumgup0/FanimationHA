@@ -1,4 +1,5 @@
 """BLE device layer for Fanimation BTCR9 ceiling fans."""
+
 from __future__ import annotations
 
 import asyncio
@@ -6,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from bleak import BleakClient
-from bleak_retry_connector import establish_connection, BleakClientWithServiceCache
+from bleak_retry_connector import BleakClientWithServiceCache, establish_connection
 from homeassistant.components import bluetooth
 from homeassistant.core import HomeAssistant
 
@@ -15,7 +16,6 @@ from .const import (
     CHAR_WRITE,
     CMD_GET_STATUS,
     CMD_SET_STATE,
-    CMD_STATUS_RESPONSE,
     LOGGER,
     START_BYTE,
 )
@@ -68,10 +68,7 @@ class FanimationDevice:
         fan_type: int = 0,
     ) -> bytes:
         """Build a 10-byte command packet with checksum."""
-        packet = bytearray(
-            [START_BYTE, cmd, speed, direction, uplight, downlight,
-             timer_hi, timer_lo, fan_type, 0]
-        )
+        packet = bytearray([START_BYTE, cmd, speed, direction, uplight, downlight, timer_hi, timer_lo, fan_type, 0])
         packet[9] = sum(packet[:9]) & 0xFF
         return bytes(packet)
 
@@ -84,9 +81,7 @@ class FanimationDevice:
         # Verify checksum
         expected = sum(data[:9]) & 0xFF
         if data[9] != expected:
-            LOGGER.warning(
-                "Checksum mismatch: got 0x%02X, expected 0x%02X", data[9], expected
-            )
+            LOGGER.warning("Checksum mismatch: got 0x%02X, expected 0x%02X", data[9], expected)
             return None
 
         return FanimationState(
@@ -108,13 +103,9 @@ class FanimationDevice:
         if self._client and self._client.is_connected:
             return
 
-        ble_device = bluetooth.async_ble_device_from_address(
-            self._hass, self._mac.upper(), connectable=True
-        )
+        ble_device = bluetooth.async_ble_device_from_address(self._hass, self._mac.upper(), connectable=True)
         if not ble_device:
-            raise ConnectionError(
-                f"Fan {self._name} ({self._mac}) not found by any Bluetooth adapter"
-            )
+            raise ConnectionError(f"Fan {self._name} ({self._mac}) not found by any Bluetooth adapter")
 
         self._client = await establish_connection(
             BleakClientWithServiceCache,
@@ -140,7 +131,7 @@ class FanimationDevice:
         if self._client:
             try:
                 await self._client.disconnect()
-            except Exception:  # noqa: BLE001
+            except Exception:  # noqa: S110
                 pass
             finally:
                 self._client = None
@@ -229,7 +220,7 @@ class FanimationDevice:
                 timer_hi=timer_hi,
                 timer_lo=timer_lo,
             )
-            set_response = await self._send_and_receive(set_packet)
+            await self._send_and_receive(set_packet)
 
             # Don't trust the echo — do a verification GET_STATUS
             verify_packet = self._build_packet(CMD_GET_STATUS)

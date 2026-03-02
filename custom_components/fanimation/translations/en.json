@@ -25,5 +25,17 @@
       "already_configured": "This fan is already configured.",
       "not_fanimation": "This device does not appear to be a Fanimation fan (expected GATT characteristics not found)."
     }
+  },
+  "entity": {
+    "light": {
+      "downlight": {
+        "name": "Downlight"
+      }
+    },
+    "number": {
+      "sleep_timer": {
+        "name": "Sleep timer"
+      }
+    }
   }
 }

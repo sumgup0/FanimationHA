@@ -1,4 +1,5 @@
 """Base entity for Fanimation BLE integration."""
+
 from __future__ import annotations
 
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH, DeviceInfo

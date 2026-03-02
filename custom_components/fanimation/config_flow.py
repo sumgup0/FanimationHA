@@ -1,18 +1,17 @@
 """Config flow for Fanimation BLE integration."""
+
 from __future__ import annotations
 
 from typing import Any
 
 import voluptuous as vol
-from bleak import BleakClient
-from bleak_retry_connector import establish_connection, BleakClientWithServiceCache
+from bleak_retry_connector import BleakClientWithServiceCache, establish_connection
 from homeassistant.components import bluetooth
 from homeassistant.components.bluetooth import BluetoothServiceInfoBleak
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.const import CONF_MAC, CONF_NAME
 
-from .const import CHAR_WRITE, CHAR_NOTIFY, DOMAIN, LOGGER
-
+from .const import CHAR_NOTIFY, CHAR_WRITE, DOMAIN, LOGGER
 
 SERVICE_UUID = "0000e000-0000-1000-8000-00805f9b34fb"
 
@@ -34,9 +33,7 @@ class FanimationConfigFlow(ConfigFlow, domain=DOMAIN):
         Returns True if the device looks like a Fanimation BTCR9.
         This is the test-before-configure check.
         """
-        ble_device = bluetooth.async_ble_device_from_address(
-            self.hass, mac.upper(), connectable=True
-        )
+        ble_device = bluetooth.async_ble_device_from_address(self.hass, mac.upper(), connectable=True)
         if not ble_device:
             return False
 
@@ -54,21 +51,20 @@ class FanimationConfigFlow(ConfigFlow, domain=DOMAIN):
                 notify_char = services.get_characteristic(CHAR_NOTIFY)
                 if write_char is None or notify_char is None:
                     LOGGER.debug(
-                        "Device %s missing expected characteristics "
-                        "(write=%s, notify=%s)",
-                        mac, write_char, notify_char,
+                        "Device %s missing expected characteristics (write=%s, notify=%s)",
+                        mac,
+                        write_char,
+                        notify_char,
                     )
                     return False
                 return True
             finally:
                 await client.disconnect()
-        except Exception as err:  # noqa: BLE001
+        except Exception as err:
             LOGGER.debug("Validation connect to %s failed: %s", mac, err)
             return False
 
-    async def async_step_bluetooth(
-        self, discovery_info: BluetoothServiceInfoBleak
-    ) -> ConfigFlowResult:
+    async def async_step_bluetooth(self, discovery_info: BluetoothServiceInfoBleak) -> ConfigFlowResult:
         """Handle Bluetooth discovery."""
         LOGGER.debug(
             "Bluetooth discovery: %s (%s)",
@@ -96,9 +92,7 @@ class FanimationConfigFlow(ConfigFlow, domain=DOMAIN):
         }
         return await self.async_step_bluetooth_confirm()
 
-    async def async_step_bluetooth_confirm(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_bluetooth_confirm(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Confirm Bluetooth discovery."""
         if user_input is not None:
             name = user_input.get(CONF_NAME, self._discovered_name)
@@ -123,9 +117,7 @@ class FanimationConfigFlow(ConfigFlow, domain=DOMAIN):
             ),
         )
 
-    async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Handle manual setup."""
         errors: dict[str, str] = {}
 

@@ -1,4 +1,5 @@
 """Fanimation BLE Ceiling Fan integration for Home Assistant."""
+
 from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
@@ -37,9 +38,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: FanimationConfigEntry) -
     return True
 
 
-async def async_unload_entry(
-    hass: HomeAssistant, entry: FanimationConfigEntry
-) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: FanimationConfigEntry) -> bool:
     """Unload a config entry.
 
     Must clean up all resources: cancel pending tasks, disconnect BLE.
@@ -48,10 +47,6 @@ async def async_unload_entry(
 
     if unload_ok:
         coordinator = entry.runtime_data
-
-        # Cancel any pending direction-change tasks on the fan entity.
-        coordinator.async_shutdown()
-
         await coordinator.device.disconnect()
         LOGGER.info("Unloaded Fanimation fan: %s", entry.title)
 

@@ -1,4 +1,5 @@
 """DataUpdateCoordinator for Fanimation BLE fans."""
+
 from __future__ import annotations
 
 from datetime import timedelta
@@ -21,9 +22,7 @@ from .device import FanimationDevice, FanimationState
 class FanimationCoordinator(DataUpdateCoordinator[FanimationState]):
     """Coordinator that polls the fan via BLE and manages fast/slow poll cycles."""
 
-    def __init__(
-        self, hass: HomeAssistant, device: FanimationDevice, entry: ConfigEntry
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, device: FanimationDevice, entry: ConfigEntry) -> None:
         """Initialize the coordinator."""
         super().__init__(
             hass,
@@ -48,8 +47,7 @@ class FanimationCoordinator(DataUpdateCoordinator[FanimationState]):
 
             if self._connection_failures >= MAX_CONNECTION_FAILURES:
                 raise UpdateFailed(
-                    f"Failed to connect to {self.device.name} after "
-                    f"{self._connection_failures} attempts: {err}"
+                    f"Failed to connect to {self.device.name} after {self._connection_failures} attempts: {err}"
                 ) from err
 
             LOGGER.warning(
@@ -83,10 +81,8 @@ class FanimationCoordinator(DataUpdateCoordinator[FanimationState]):
         if should_disconnect:
             try:
                 await self.device.disconnect()
-            except Exception:  # noqa: BLE001
-                LOGGER.debug(
-                    "Error disconnecting from %s (non-fatal)", self.device.name
-                )
+            except Exception:
+                LOGGER.debug("Error disconnecting from %s (non-fatal)", self.device.name)
 
         return state
 

@@ -1,7 +1,8 @@
 """Sleep timer entity for Fanimation BLE integration."""
+
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.const import UnitOfTime
@@ -11,6 +12,9 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from . import FanimationConfigEntry
 from .const import TIMER_MAX, TIMER_MIN
 from .entity import FanimationEntity
+
+if TYPE_CHECKING:
+    from .coordinator import FanimationCoordinator
 
 
 async def async_setup_entry(
@@ -27,7 +31,7 @@ class FanimationTimer(FanimationEntity, NumberEntity):
     """Fanimation sleep timer entity."""
 
     _attr_icon = "mdi:timer-outline"
-    _attr_mode = NumberMode.BOX
+    _attr_mode = NumberMode.SLIDER
     _attr_native_min_value = TIMER_MIN
     _attr_native_max_value = TIMER_MAX
     _attr_native_step = 1
