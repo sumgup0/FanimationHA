@@ -36,13 +36,21 @@ class FanimationCoordinator(DataUpdateCoordinator[FanimationState]):
         self._connection_failures = 0
 
     async def _async_update_data(self) -> FanimationState:
-        """Poll the fan for current state."""
-        should_disconnect = False
+        """Poll the fan for current state.
+
+        The BLE connection is kept alive between polls so that user
+        commands (light toggle, speed change) respond instantly instead
+        of waiting 10-20 s for a fresh BLE connection.  If the fan
+        drops the connection on its own, ``_on_disconnect`` sets the
+        client to ``None`` and the next poll/command reconnects
+        transparently.  Disconnect only happens on error (to force a
+        clean reconnect) or when the config entry is unloaded.
+        """
         try:
             state = await self.device.async_get_status()
         except Exception as err:
             self._connection_failures += 1
-            # Always disconnect on failure to force clean reconnect
+            # Disconnect on failure to force clean reconnect next time
             await self.device.disconnect()
 
             if self._connection_failures >= MAX_CONNECTION_FAILURES:
@@ -70,19 +78,8 @@ class FanimationCoordinator(DataUpdateCoordinator[FanimationState]):
         if self._fast_poll_remaining > 0:
             self._fast_poll_remaining -= 1
             if self._fast_poll_remaining == 0:
-                # Revert to slow polling and disconnect
                 self.update_interval = timedelta(seconds=POLL_SLOW)
-                should_disconnect = True
                 LOGGER.debug("Reverting to slow poll for %s", self.device.name)
-        else:
-            # Slow poll — disconnect to free BLE slot
-            should_disconnect = True
-
-        if should_disconnect:
-            try:
-                await self.device.disconnect()
-            except Exception:
-                LOGGER.debug("Error disconnecting from %s (non-fatal)", self.device.name)
 
         return state
 
