@@ -22,6 +22,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = [
     "D",      # no docstrings required in tests
+    "E402",   # imports after sys.modules stubs / skipif markers are intentional
     "S101",   # assert is fine in tests
 ]
 

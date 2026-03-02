@@ -20,18 +20,18 @@ pytestmark = pytest.mark.skipif(
     reason="Config-flow tests require the full HA test framework (Linux CI only)",
 )
 
-from unittest.mock import AsyncMock, MagicMock, patch  # noqa: E402
+from unittest.mock import AsyncMock, MagicMock, patch
 
-from homeassistant import config_entries  # noqa: E402
-from homeassistant.components.bluetooth import BluetoothServiceInfoBleak  # noqa: E402
-from homeassistant.const import CONF_MAC, CONF_NAME  # noqa: E402
-from homeassistant.core import HomeAssistant  # noqa: E402
-from homeassistant.data_entry_flow import FlowResultType  # noqa: E402
-from pytest_homeassistant_custom_component.common import MockConfigEntry  # noqa: E402
+from homeassistant import config_entries
+from homeassistant.components.bluetooth import BluetoothServiceInfoBleak
+from homeassistant.const import CONF_MAC, CONF_NAME
+from homeassistant.core import HomeAssistant
+from homeassistant.data_entry_flow import FlowResultType
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.fanimation.const import DOMAIN  # noqa: E402
+from custom_components.fanimation.const import DOMAIN
 
-from .conftest import TEST_MAC, TEST_NAME  # noqa: E402
+from .conftest import TEST_MAC, TEST_NAME
 
 
 @pytest.fixture(autouse=True)
