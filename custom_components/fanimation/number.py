@@ -74,8 +74,7 @@ class FanimationTimer(FanimationEntity, NumberEntity):
         """
         if int(value) > 0 and self.coordinator.data and self.coordinator.data.speed == 0:
             raise HomeAssistantError(
-                "The sleep timer only works when the fan is running. "
-                "Turn the fan on first, then set the timer."
+                "The sleep timer only works when the fan is running. Turn the fan on first, then set the timer."
             )
         await self.coordinator.device.async_set_state(timer_minutes=int(value))
         await self.coordinator.async_start_fast_poll()

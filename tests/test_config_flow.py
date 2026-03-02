@@ -27,10 +27,18 @@ from homeassistant.components.bluetooth import BluetoothServiceInfoBleak  # noqa
 from homeassistant.const import CONF_MAC, CONF_NAME  # noqa: E402
 from homeassistant.core import HomeAssistant  # noqa: E402
 from homeassistant.data_entry_flow import FlowResultType  # noqa: E402
+from pytest_homeassistant_custom_component.common import MockConfigEntry  # noqa: E402
 
 from custom_components.fanimation.const import DOMAIN  # noqa: E402
 
 from .conftest import TEST_MAC, TEST_NAME  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def auto_enable_custom_integrations(enable_custom_integrations):
+    """Enable custom integrations for all tests in this module."""
+    yield
+
 
 # Fake Bluetooth discovery info matching a "CeilingFan" device
 FAKE_DISCOVERY = BluetoothServiceInfoBleak(
@@ -270,10 +278,12 @@ class TestDuplicatePrevention:
     async def test_duplicate_mac_aborts_discovery(self, hass: HomeAssistant) -> None:
         """Discovery of an already-configured MAC should abort."""
         # Create an existing entry for the same MAC
-        existing = MagicMock()
-        existing.unique_id = TEST_MAC.upper()
-        existing.domain = DOMAIN
-        hass.config_entries._entries._data[existing.entry_id] = existing
+        existing = MockConfigEntry(
+            domain=DOMAIN,
+            unique_id=TEST_MAC.upper(),
+            data={CONF_MAC: TEST_MAC.upper(), CONF_NAME: TEST_NAME},
+        )
+        existing.add_to_hass(hass)
 
         with (
             patch(
@@ -301,10 +311,12 @@ class TestDuplicatePrevention:
     async def test_duplicate_mac_aborts_manual(self, hass: HomeAssistant) -> None:
         """Manual entry of an already-configured MAC should abort."""
         # Create an existing entry for the same MAC
-        existing = MagicMock()
-        existing.unique_id = TEST_MAC.upper()
-        existing.domain = DOMAIN
-        hass.config_entries._entries._data[existing.entry_id] = existing
+        existing = MockConfigEntry(
+            domain=DOMAIN,
+            unique_id=TEST_MAC.upper(),
+            data={CONF_MAC: TEST_MAC.upper(), CONF_NAME: TEST_NAME},
+        )
+        existing.add_to_hass(hass)
 
         result = await hass.config_entries.flow.async_init(
             DOMAIN,
